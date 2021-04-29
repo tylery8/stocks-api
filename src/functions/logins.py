@@ -16,7 +16,7 @@ def read(username, password):
     return 200, login.__dict__
 
 
-def create(username, password):
+def create(username, password, apikey=None):
     login = LOGINS_CLIENT.get_item(username)
 
     if login:
@@ -25,7 +25,7 @@ def create(username, password):
     login = Login(
         username=username,
         password=encrypt_password(password),
-        account_id=accounts.create()[1]['account_id']
+        account_id=accounts.create(apikey=apikey)[1]['account_id']
     )
 
     LOGINS_CLIENT.put_item(login)

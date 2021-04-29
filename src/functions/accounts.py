@@ -4,9 +4,10 @@ from src.models.account import Account
 from src.exceptions import WatchlistLimitExceededException
 
 
-def create():
+def create(apikey=None):
     account = Account(
-        account_id=generate_account_id()
+        account_id=generate_account_id(),
+        apikey=apikey
     )
 
     ACCOUNTS_CLIENT.put_item(account)
