@@ -24,13 +24,13 @@ def create(username, password):
 
     login = Login(
         username=username,
-        password=password,
-        account_id=accounts.create().account_id
+        password=encrypt_password(password),
+        account_id=accounts.create()[1]['account_id']
     )
 
     LOGINS_CLIENT.put_item(login)
 
-    return login.__dict__
+    return 200, login.__dict__
 
 
 def encrypt_password(password):
