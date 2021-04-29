@@ -28,11 +28,6 @@ def route(path, **kwargs):
             return logins.read(**kwargs)
         if path[2] == 'POST':
             return logins.create(**kwargs)
-    if path[1] == 'apikey':
-        if path[2] == 'GET':
-            return accounts.read_apikey(**kwargs)
-        if path[2] == 'PUT':
-            return accounts.update_apikey(**kwargs)
     if path[1] == 'watchlist':
         if path[2] == 'GET':
             return accounts.read_watchlist(**kwargs)

@@ -4,10 +4,9 @@ from src.models.account import Account
 from src.exceptions import WatchlistLimitExceededException
 
 
-def create(apikey=None):
+def create():
     account = Account(
-        account_id=generate_account_id(),
-        apikey=apikey
+        account_id=generate_account_id()
     )
 
     ACCOUNTS_CLIENT.put_item(account)
@@ -32,19 +31,3 @@ def update_watchlist(account_id, watchlist):
         ACCOUNTS_CLIENT.put_item(account)
 
     return 200, watchlist
-
-
-def read_apikey(account_id):
-    account = ACCOUNTS_CLIENT.get_item(account_id)
-
-    return 200, account.apikey
-
-
-def update_apikey(account_id, apikey):
-    account = ACCOUNTS_CLIENT.get_item(account_id)
-
-    if account.apikey != apikey:
-        account.apikey = apikey
-        ACCOUNTS_CLIENT.put_item(account)
-
-    return 200, apikey

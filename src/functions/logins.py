@@ -11,7 +11,7 @@ def read(username, password):
     if not login:
         raise UsernameDoesNotExistException(username=username)
 
-    if encrypt_password(password) != login.password:
+    if encrypt_password(password) != login.encrypted_password:
         raise IncorrectUsernamePasswordException()
 
     return 200, login.__dict__
@@ -25,8 +25,9 @@ def create(username, password, apikey=None):
 
     login = Login(
         username=username,
-        password=encrypt_password(password),
-        account_id=accounts.create(apikey=apikey)[1]['account_id']
+        encrypted_password=encrypt_password(password),
+        account_id=accounts.create()[1]['account_id'],
+        apikey=apikey
     )
 
     LOGINS_CLIENT.put_item(login)
