@@ -1,6 +1,7 @@
 from src.dynamo.accounts_client import ACCOUNTS_CLIENT
 from src.ids.generators import generate_account_id
 from src.models.account import Account
+from src.exceptions import WatchlistLimitExceededException
 
 
 def create():
@@ -20,6 +21,9 @@ def read_watchlist(account_id):
 
 
 def update_watchlist(account_id, watchlist):
+    if len(watchlist > 8):
+        raise WatchlistLimitExceededException(8)
+
     account = ACCOUNTS_CLIENT.get_item(account_id)
 
     if account.watchlist != watchlist:
