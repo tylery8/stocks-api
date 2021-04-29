@@ -2,6 +2,7 @@ from src.exceptions import UsernameDoesNotExistException, IncorrectUsernamePassw
 from src.dynamo.logins_client import LOGINS_CLIENT
 from src.models.login import Login
 from src.functions import accounts
+from hashlib import sha256
 
 
 def read(username, password):
@@ -34,4 +35,4 @@ def create(username, password, apikey=None):
 
 
 def encrypt_password(password):
-    return password + '_enc'
+    return sha256(password.encode()).hexdigest()
