@@ -8,7 +8,7 @@ def main(routeKey, headers, body='{}', **kwargs):
     path = path.split('/')
     path.append(method)
 
-    headers = json.loads(headers)
+    headers = headers
 
     kwargs = json.loads(body)
     if 'x-stocks-username' in headers:
