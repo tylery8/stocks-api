@@ -21,7 +21,7 @@ def read_watchlist(account_id):
 
 
 def update_watchlist(account_id, watchlist):
-    if len(watchlist > 8):
+    if len(watchlist) > 8:
         raise WatchlistLimitExceededException(8)
 
     account = ACCOUNTS_CLIENT.get_item(account_id)
