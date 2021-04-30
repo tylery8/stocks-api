@@ -27,3 +27,13 @@ class UsernameTakenException(StocksException):
 class WatchlistLimitExceededException(StocksException):
     def __init__(self, limit):
         super().__init__(429, f"Watchlist can only contain up to {limit} stocks")
+
+
+class InvalidUsernameException(StocksException):
+    def __init__(self, message):
+        super().__init__(400, message)
+
+
+class InvalidPasswordException(StocksException):
+    def __init__(self, message):
+        super().__init__(400, message)

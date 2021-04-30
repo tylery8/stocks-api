@@ -1,4 +1,5 @@
-from src.exceptions import UsernameDoesNotExistException, IncorrectUsernamePasswordException, UsernameTakenException
+from src.exceptions import UsernameDoesNotExistException, IncorrectUsernamePasswordException, UsernameTakenException,\
+    InvalidUsernameException, InvalidPasswordException
 from src.dynamo.logins_client import LOGINS_CLIENT
 from src.models.login import Login
 from src.functions import accounts
@@ -18,6 +19,13 @@ def read(username, password):
 
 
 def create(username, password, apikey=None):
+
+    if len(username) < 3 or len(username) > 24:
+        raise InvalidUsernameException("Username must be between 3 and 24 characters")
+
+    if len(password) < 8 or len(password) > 24:
+        raise InvalidPasswordException("Password must be between 8 and 24 characters")
+
     login = LOGINS_CLIENT.get_item(username)
 
     if login:
