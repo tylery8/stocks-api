@@ -7,6 +7,13 @@ from hashlib import sha256
 
 
 def read(username, password):
+
+    if not username:
+        raise InvalidUsernameException("Username cannot be empty")
+
+    if not password:
+        raise InvalidPasswordException("Password cannot be empty")
+
     login = LOGINS_CLIENT.get_item(username)
 
     if not login:
@@ -19,6 +26,12 @@ def read(username, password):
 
 
 def create(username, password, apikey=None):
+
+    if not username:
+        raise InvalidUsernameException("Username cannot be empty")
+
+    if not password:
+        raise InvalidPasswordException("Password cannot be empty")
 
     if len(username) < 3 or len(username) > 24:
         raise InvalidUsernameException("Username must be between 3 and 24 characters")
