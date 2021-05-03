@@ -73,8 +73,8 @@ def add_trade(account_id, symbol, price, amount, buy=True):
     account.portfolio['trades'].insert(0, {
         'symbol': symbol,
         'time': round(time() * 1000),
-        'price': round(price * 1000)/1000,
-        'cost': (1 if buy else -1) * round(amount * 100)/100
+        'price': round(float(price) * 1000)/1000,
+        'cost': (1 if buy else -1) * round(float(amount) * 100)/100
     })
 
     ACCOUNTS_CLIENT.put_item(account)
