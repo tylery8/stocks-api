@@ -2,7 +2,6 @@ from src.dynamo.accounts_client import ACCOUNTS_CLIENT
 from src.ids.generators import generate_account_id
 from src.models.account import Account
 from src.exceptions import WatchlistLimitExceededException, IllegalAmountException, InsufficientFundsException
-from time import time
 
 
 def create():
@@ -53,7 +52,7 @@ def read_portfolio(account_id):
     return 200, portfolio
 
 
-def add_trade(account_id, symbol, price, amount, buy=True):
+def add_trade(account_id, symbol, time, price, amount, buy=True):
     if amount <= 0:
         raise IllegalAmountException("Amounts must be positive")
 
@@ -66,7 +65,7 @@ def add_trade(account_id, symbol, price, amount, buy=True):
 
     account.portfolio['trades'].insert(0, {
         'symbol': symbol,
-        'time': round(time() * 1000),
+        'time': time,
         'price': round(price, 3),
         'amount': round(amount, 2),
         'shares': round(amount/price, 10),
