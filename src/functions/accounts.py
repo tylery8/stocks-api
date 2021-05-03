@@ -52,13 +52,15 @@ def add_trade(account_id, symbol, time, price, amount, buy=True):
     if amount <= 0:
         raise IllegalAmountException("Amounts must be positive")
 
+    shares = amount/price
+
     account = ACCOUNTS_CLIENT.get_item(account_id)
 
     if buy:
         if amount > account.portfolio['cash']:
             raise InsufficientFundsException()
     else:
-        if amount/price > account.portfolio['stocks'][symbol]['shares']:
+        if shares > account.portfolio['stocks'][symbol]['shares']:
             raise InsufficientFundsException()
 
     account.portfolio['cash'] -= (1 if buy else -1) * amount
@@ -66,11 +68,12 @@ def add_trade(account_id, symbol, time, price, amount, buy=True):
     if symbol not in account.portfolio['stocks']:
         account.portfolio['stocks'][symbol] = {'shares': 0, 'trades': []}
 
+    account.portfolio['stocks'][symbol]['shares'] += round(shares, 10)
     account.portfolio['stocks'][symbol]['trades'].insert(0, {
         'time': time,
         'price': round(price, 3),
         'amount': round(amount, 2),
-        'shares': round(amount/price, 10),
+        'shares': round(shares, 10),
         'buy': buy
     })
 
@@ -90,4 +93,4 @@ def add_deposit(account_id, amount):
 
     ACCOUNTS_CLIENT.put_item(account)
 
-    return 200, {'deposit': amount}
+    return 200, {'amount': amount}
