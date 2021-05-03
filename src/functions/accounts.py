@@ -43,7 +43,7 @@ def read_portfolio(account_id):
 
     portfolio['trades'] = [{
         'symbol': trade['symbol'],
-        'date': trade['date'],
+        'time': trade['time'],
         'price': trade['price'],
         'shares': abs(trade['cost'])/trade['price'],
         'amount': abs(trade['cost']),
@@ -72,9 +72,9 @@ def add_trade(account_id, symbol, price, amount, buy=True):
 
     account.portfolio['trades'].insert(0, {
         'symbol': symbol,
-        'date': round(time() * 1000),
-        'price': price,
-        'cost': amount if buy else -amount
+        'time': round(time() * 1000),
+        'price': round(price * 1000)/1000,
+        'cost': (1 if buy else -1) * round(amount * 100)/100
     })
 
     ACCOUNTS_CLIENT.put_item(account)
