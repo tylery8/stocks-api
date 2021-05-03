@@ -17,7 +17,7 @@ def create():
 def read_watchlist(account_id):
     account = ACCOUNTS_CLIENT.get_item(account_id)
 
-    return 200, account.watchlist
+    return 200, sorted(account.watchlist, key=lambda stock: stock['symbol'])
 
 
 def update_watchlist(account_id, watchlist):
