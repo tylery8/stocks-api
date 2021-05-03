@@ -3,6 +3,7 @@ from src.ids.generators import generate_account_id
 from src.models.account import Account
 from src.exceptions import WatchlistLimitExceededException, IllegalAmountException
 from time import time
+from decimal import Decimal
 
 
 def create():
@@ -39,16 +40,9 @@ def read_portfolio(account_id):
 
     portfolio = account.portfolio
 
-    portfolio['cash'] = portfolio['deposit'] - sum(trade['cost'] for trade in portfolio['trades'])
-
-    portfolio['trades'] = [{
-        'symbol': trade['symbol'],
-        'time': trade['time'],
-        'price': trade['price'],
-        'shares': abs(trade['cost'])/trade['price'],
-        'amount': abs(trade['cost']),
-        'buy': trade['cost'] >= 0
-    } for trade in portfolio['trades']]
+    portfolio['cash'] = portfolio['deposit'] - sum(
+        (1 if trade['buy'] else -1) * trade['amount'] for trade in portfolio['trades']
+    )
 
     stocks = {}
     for trade in portfolio['trades']:
@@ -56,7 +50,7 @@ def read_portfolio(account_id):
         if symbol not in stocks:
             stocks[symbol] = {'symbol': symbol, 'shares': 0, 'trades': []}
 
-        stocks[symbol]['shares'] += trade['shares']
+        stocks[symbol]['shares'] += (1 if trade['buy'] else -1) * trade['shares']
         stocks[symbol]['trades'].append(trade)
 
     portfolio['stocks'] = list(stocks.values())
@@ -73,13 +67,15 @@ def add_trade(account_id, symbol, price, amount, buy=True):
     account.portfolio['trades'].insert(0, {
         'symbol': symbol,
         'time': round(time() * 1000),
-        'price': price,
-        'cost': (1 if buy else -1) * amount
+        'price': Decimal(str(round(price, 3))),
+        'amount': Decimal(str(round(amount, 2))),
+        'shares': Decimal(str(round(amount/price, 10))),
+        'buy': buy
     })
 
     ACCOUNTS_CLIENT.put_item(account)
 
-    return 200, account.portfolio['trades']
+    return 200, account.portfolio['trades'][0]
 
 
 def set_deposit(account_id, deposit):
