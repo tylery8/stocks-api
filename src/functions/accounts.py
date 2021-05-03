@@ -1,7 +1,9 @@
 from src.dynamo.accounts_client import ACCOUNTS_CLIENT
 from src.ids.generators import generate_account_id
 from src.models.account import Account
-from src.exceptions import WatchlistLimitExceededException, IllegalAmountException, InsufficientFundsException
+from src.exceptions import WatchlistLimitExceededException, IllegalAmountException, InsufficientFundsException,\
+    RapidTradeException
+from time import time as now
 
 
 def create():
@@ -61,6 +63,9 @@ def add_trade(account_id, symbol, time, price, amount, buy=True):
 
     account = ACCOUNTS_CLIENT.get_item(account_id)
 
+    if round(now() * 1000) - account.portfolio['last_action'] <= 5000:
+        raise RapidTradeException('Please wait at least 5 seconds between actions')
+
     if buy:
         if amount > account.portfolio['cash']:
             raise InsufficientFundsException()
@@ -81,6 +86,8 @@ def add_trade(account_id, symbol, time, price, amount, buy=True):
         'shares': round(shares, 10),
         'buy': buy
     })
+
+    account.portfolio['last_action'] = round(now() * 1000)
 
     ACCOUNTS_CLIENT.put_item(account)
 
