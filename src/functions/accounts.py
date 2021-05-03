@@ -38,16 +38,12 @@ def read_portfolio(account_id):
 
     portfolio = account.portfolio
 
-    stocks = {}
-    for trade in portfolio['trades']:
-        symbol = trade['symbol']
-        if symbol not in stocks:
-            stocks[symbol] = {'symbol': symbol, 'shares': 0, 'trades': []}
-
-        stocks[symbol]['shares'] += (1 if trade['buy'] else -1) * trade['shares']
-        stocks[symbol]['trades'].append(trade)
-
-    portfolio['stocks'] = list(stocks.values())
+    portfolio['stocks'] = [{'symbol': k, **v} for k, v in portfolio['stocks'].items()]
+    portfolio['trades'] = sorted([{'symbol': stock['symbol'], **trade}
+                                  for stock in portfolio['stocks']
+                                  for trade in stock['trades']],
+                                 key=lambda trade: trade['time'],
+                                 reverse=True)
 
     return 200, portfolio
 
@@ -58,13 +54,19 @@ def add_trade(account_id, symbol, time, price, amount, buy=True):
 
     account = ACCOUNTS_CLIENT.get_item(account_id)
 
-    if buy and amount > account.portfolio['cash']:
-        raise InsufficientFundsException()
+    if buy:
+        if amount > account.portfolio['cash']:
+            raise InsufficientFundsException()
+    else:
+        if amount/price > account.portfolio['stocks'][symbol]['shares']:
+            raise InsufficientFundsException()
 
     account.portfolio['cash'] -= (1 if buy else -1) * amount
 
-    account.portfolio['trades'].insert(0, {
-        'symbol': symbol,
+    if symbol not in account.portfolio['stocks']:
+        account.portfolio['stocks'][symbol] = {'shares': 0, 'trades': []}
+
+    account.portfolio['stocks'][symbol]['trades'].insert(0, {
         'time': time,
         'price': round(price, 3),
         'amount': round(amount, 2),
@@ -74,18 +76,18 @@ def add_trade(account_id, symbol, time, price, amount, buy=True):
 
     ACCOUNTS_CLIENT.put_item(account)
 
-    return 200, account.portfolio['trades'][0]
+    return 200, account.portfolio['stocks'][symbol]['trades'][0]
 
 
-def add_deposit(account_id, deposit):
-    if deposit <= 0:
+def add_deposit(account_id, amount):
+    if amount <= 0:
         raise IllegalAmountException("Deposits must be positive")
 
     account = ACCOUNTS_CLIENT.get_item(account_id)
 
-    account.portfolio['deposit'] += deposit
-    account.portfolio['cash'] += deposit
+    account.portfolio['deposit'] += amount
+    account.portfolio['cash'] += amount
 
     ACCOUNTS_CLIENT.put_item(account)
 
-    return 200, {'deposit': deposit}
+    return 200, {'deposit': amount}
