@@ -42,3 +42,8 @@ class InvalidPasswordException(StocksException):
 class IllegalAmountException(StocksException):
     def __init__(self, message):
         super().__init__(400, message)
+
+
+class InsufficientFundsException(StocksException):
+    def __init__(self):
+        super().__init__(400, 'Insufficient funds to complete trade')

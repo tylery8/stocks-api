@@ -1,7 +1,7 @@
 from src.dynamo.accounts_client import ACCOUNTS_CLIENT
 from src.ids.generators import generate_account_id
 from src.models.account import Account
-from src.exceptions import WatchlistLimitExceededException, IllegalAmountException
+from src.exceptions import WatchlistLimitExceededException, IllegalAmountException, InsufficientFundsException
 from time import time
 
 
@@ -39,10 +39,6 @@ def read_portfolio(account_id):
 
     portfolio = account.portfolio
 
-    portfolio['cash'] = portfolio['deposit'] - sum(
-        (1 if trade['buy'] else -1) * trade['amount'] for trade in portfolio['trades']
-    )
-
     stocks = {}
     for trade in portfolio['trades']:
         symbol = trade['symbol']
@@ -63,6 +59,11 @@ def add_trade(account_id, symbol, price, amount, buy=True):
 
     account = ACCOUNTS_CLIENT.get_item(account_id)
 
+    if buy and amount > account.portfolio['cash']:
+        raise InsufficientFundsException()
+
+    account.portfolio['cash'] -= (1 if buy else -1) * amount
+
     account.portfolio['trades'].insert(0, {
         'symbol': symbol,
         'time': round(time() * 1000),
@@ -77,14 +78,15 @@ def add_trade(account_id, symbol, price, amount, buy=True):
     return 200, account.portfolio['trades'][0]
 
 
-def set_deposit(account_id, deposit):
+def add_deposit(account_id, deposit):
     if deposit <= 0:
         raise IllegalAmountException("Deposits must be positive")
 
     account = ACCOUNTS_CLIENT.get_item(account_id)
 
-    if account.portfolio['deposit'] != deposit:
-        account.portfolio['deposit'] = deposit
-        ACCOUNTS_CLIENT.put_item(account)
+    account.portfolio['deposit'] += deposit
+    account.portfolio['cash'] += deposit
 
-    return 200, account.portfolio['deposit']
+    ACCOUNTS_CLIENT.put_item(account)
+
+    return 200, {'deposit': deposit}

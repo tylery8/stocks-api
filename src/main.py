@@ -40,7 +40,7 @@ def route(path, **kwargs):
             if path[3] == 'POST':
                 return accounts.add_trade(**kwargs)
         if path[2] == 'deposit':
-            if path[3] == 'PUT':
-                return accounts.set_deposit(**kwargs)
+            if path[3] == 'POST':
+                return accounts.add_deposit(**kwargs)
 
     raise RoutingException()
