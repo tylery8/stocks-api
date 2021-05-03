@@ -40,7 +40,7 @@ def read_portfolio(account_id):
 
     portfolio = account.portfolio
 
-    for stock in portfolio['stocks']:
+    for stock in portfolio['stocks'].values():
         stock['trades'].sort(key=lambda trade: trade['time'], reverse=True)
 
     portfolio['stocks'] = sorted([{'symbol': k, **v} for k, v in portfolio['stocks'].items()],
