@@ -33,5 +33,14 @@ def route(path, **kwargs):
             return accounts.read_watchlist(**kwargs)
         if path[2] == 'PUT':
             return accounts.update_watchlist(**kwargs)
+    if path[1] == 'portfolio':
+        if path[2] == 'GET':
+            return accounts.read_portfolio(**kwargs)
+        if path[2] == 'trade':
+            if path[3] == 'POST':
+                return accounts.add_trade(**kwargs)
+        if path[2] == 'deposit':
+            if path[3] == 'PUT':
+                return accounts.set_deposit(**kwargs)
 
     raise RoutingException()

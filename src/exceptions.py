@@ -37,3 +37,8 @@ class InvalidUsernameException(StocksException):
 class InvalidPasswordException(StocksException):
     def __init__(self, message):
         super().__init__(400, message)
+
+
+class IllegalAmountException(StocksException):
+    def __init__(self, message):
+        super().__init__(400, message)
