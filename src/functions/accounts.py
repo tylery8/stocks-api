@@ -3,7 +3,6 @@ from src.ids.generators import generate_account_id
 from src.models.account import Account
 from src.exceptions import WatchlistLimitExceededException, IllegalAmountException
 from time import time
-from decimal import Decimal
 
 
 def create():
@@ -67,9 +66,9 @@ def add_trade(account_id, symbol, price, amount, buy=True):
     account.portfolio['trades'].insert(0, {
         'symbol': symbol,
         'time': round(time() * 1000),
-        'price': Decimal(str(round(price, 3))),
-        'amount': Decimal(str(round(amount, 2))),
-        'shares': Decimal(str(round(amount/price, 10))),
+        'price': round(price, 3),
+        'amount': round(amount, 2),
+        'shares': round(amount/price, 10),
         'buy': buy
     })
 

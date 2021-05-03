@@ -33,7 +33,7 @@ class Client:
         elif isinstance(obj, set):
             return set(Client.to_dynamo(el) for el in obj)
         elif isinstance(obj, float):
-            return Decimal(obj)
+            return Decimal(str(obj))
         else:
             return obj
 
