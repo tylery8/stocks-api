@@ -68,7 +68,7 @@ def add_trade(account_id, symbol, time, price, amount, buy=True):
     if symbol not in account.portfolio['stocks']:
         account.portfolio['stocks'][symbol] = {'shares': 0, 'trades': []}
 
-    account.portfolio['stocks'][symbol]['shares'] += round(shares, 10)
+    account.portfolio['stocks'][symbol]['shares'] += (1 if buy else -1) * shares
     account.portfolio['stocks'][symbol]['trades'].insert(0, {
         'time': time,
         'price': round(price, 3),
