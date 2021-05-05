@@ -60,7 +60,7 @@ def delete_portfolio(account_id):
 
     account.portfolio = None
 
-    ACCOUNTS_CLIENT.put_item(account_id)
+    ACCOUNTS_CLIENT.put_item(account)
 
     return 200, account.__dict__
 
