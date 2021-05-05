@@ -100,8 +100,13 @@ def add_deposit(account_id, amount):
 
     account = ACCOUNTS_CLIENT.get_item(account_id)
 
+    if round(now() * 1000) - account.portfolio['last_action'] <= 5000:
+        raise RapidTradeException('Please wait at least 5 seconds between actions')
+
     account.portfolio['deposit'] += amount
     account.portfolio['cash'] += amount
+
+    account.portfolio['last_action'] = round(now() * 1000)
 
     ACCOUNTS_CLIENT.put_item(account)
 
