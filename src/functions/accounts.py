@@ -55,6 +55,16 @@ def read_portfolio(account_id):
     return 200, portfolio
 
 
+def delete_portfolio(account_id):
+    account = ACCOUNTS_CLIENT.get_item(account_id)
+
+    account.portfolio = None
+
+    ACCOUNTS_CLIENT.put_item(account_id)
+
+    return 200, account.__dict__
+
+
 def add_trade(account_id, symbol, time, price, amount, buy=True):
     if amount <= 0:
         raise IllegalAmountException("Amounts must be positive")
