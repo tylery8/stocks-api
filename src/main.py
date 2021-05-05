@@ -36,6 +36,8 @@ def route(path, **kwargs):
     if path[1] == 'portfolio':
         if path[2] == 'GET':
             return accounts.read_portfolio(**kwargs)
+        if path[2] == 'DELETE':
+            return accounts.delete_portfolio(**kwargs)
         if path[2] == 'trade':
             if path[3] == 'POST':
                 return accounts.add_trade(**kwargs)
