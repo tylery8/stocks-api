@@ -45,8 +45,8 @@ class IllegalAmountException(StocksException):
 
 
 class InsufficientFundsException(StocksException):
-    def __init__(self):
-        super().__init__(400, 'Insufficient funds to complete trade')
+    def __init__(self, message):
+        super().__init__(400, message)
 
 
 class RapidTradeException(StocksException):

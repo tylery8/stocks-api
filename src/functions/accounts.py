@@ -78,10 +78,10 @@ def add_trade(account_id, symbol, time, price, amount, buy=True):
 
     if buy:
         if amount > account.portfolio['cash']:
-            raise InsufficientFundsException()
+            raise InsufficientFundsException('Insufficient funds to place trade. Deposit more and try again')
     else:
         if shares > account.portfolio['stocks'][symbol]['shares']:
-            raise InsufficientFundsException()
+            raise InsufficientFundsException(f'Insufficient shares of {symbol} to place trade')
 
     account.portfolio['cash'] -= (1 if buy else -1) * amount
 
